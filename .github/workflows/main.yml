@@ -22,12 +22,19 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
     - name: Build an image from Dockerfile
-      run: |
-        docker build -t docker.io/my-organization/my-app:${{ github.sha }} .
-    - name: Run vulnerability scanner
+     # run: |
+     #   docker build -t docker.io/my-organization/my-app:${{ github.sha }} .
+    - name: Run Trivy vulnerability scanner in IaC mode
       uses: aquasecurity/trivy-action@master
       with:
-        image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
+          scan-type: 'fs'
+          security-checks: 'vuln,config,secret'
+          hide-progress: false
+          #format: 'table'
+    #- name: Run vulnerability scanner
+     # uses: aquasecurity/trivy-action@master
+      #with:
+       # image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
         format: 'template'
         template: '@/contrib/sarif.tpl'
         output: 'trivy-results.sarif'
